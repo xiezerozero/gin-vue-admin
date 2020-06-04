@@ -1,0 +1,65 @@
+version: '3.2'
+
+services:
+
+  nginx:
+    image: nginx:alpine
+    container_name: gin-vue-nginx
+    volumes:
+      - ./docker/etc/nginx/admin.conf:/etc/nginx/conf.d/admin.conf
+      - ./docker/etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./dist:/var/www/html
+    ports:
+      - 28080:80
+    depends_on:
+      - ginapp
+    extra_hosts:
+      - "ginapp.tengsaw.com:172.25.0.101"
+    networks:
+      gin-vue-admin:
+        ipv4_address: 172.25.0.100
+
+  ginapp:
+    image: gin-vue-server
+    container_name: gin-vue-server
+    ports:
+      - 8888:8888
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      gin-vue-admin:
+        ipv4_address: 172.25.0.101
+
+  mysql:
+    image: mysql:5.7
+    container_name: gin-vue-mysql
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+      - ./server/db:/docker-entrypoint-initdb.d
+    ports:
+      - 13306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=gin-vue-admin
+      - MYSQL_USER=gin-vue-admin
+      - MYSQL_PASSWORD=123456
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_general_ci", "--sql_mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"]
+    networks:
+      gin-vue-admin:
+        ipv4_address: 172.25.0.102
+  redis:
+    image: redis:4.0
+    container_name: gin-vue-redis
+    ports:
+      - 16379:6379
+    networks:
+      gin-vue-admin:
+        ipv4_address: 172.25.0.103
+
+networks:
+  gin-vue-admin:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/16

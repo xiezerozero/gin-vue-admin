@@ -10,10 +10,10 @@ jwt:
 
 # mysql connect configuration
 mysql:
-    username: root
-    password: 'Aa@6447985'
-    path: '127.0.0.1:3306'
-    db-name: 'qmPlus'
+    username: gin-vue-admin
+    password: '123456'
+    path: '172.25.0.102:3306'
+    db-name: 'gin-vue-admin'
     config: 'charset=utf8&parseTime=True&loc=Local'
     max-idle-conns: 10
     max-open-conns: 10
@@ -33,8 +33,8 @@ qiniu:
     img-path: 'http://qmplusimg.henrongyi.top'
 # redis configuration
 redis:
-    addr: '127.0.0.1:6379'
-    password: ''
+    addr: 'docker-redis'
+    password: '172.25.0.103:6379'
     db: 0
 
 # system configuration
